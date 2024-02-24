@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Engine</title>
+    <!-- FONT AWESOME LINK -->
+    <script src="https://kit.fontawesome.com/798c43ac30.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="sphere.obj">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="move_tool">
+        <i class="fa-solid fa-up-down-left-right"></i>
+    </div>
+
+    <div id="create">
+        <div class="create_control_bar">
+            <p>create</p>
+            <div id="create_close"></div>
+        </div>
+        <div id="create_input_box">
+            <label for="shape"></label>
+            <select id="shape" name="shape">
+                <option value="cube">Cube</option>
+                <option value="octahedron">Octahedron</option>
+                <option value="hexagonal_prism">Hexagonal Prism</option>
+                <option value="Axis">Axis</option>
+            </select>
+            <input type="number" id="size" placeholder="Size *">
+            <div class="checbox_box">
+                <div>
+                    <input type="checkbox" name="Border" id="Border">
+                    <label for="Border">Border</label>
+                </div>
+                <div>
+                    <input type="checkbox" name="Fill" id="Fill">
+                    <label for="Fill">Fill</label>
+                </div>
+            </div>
+            <hr style="opacity: 0.3; margin: 10px 0px;">
+            <div id="create_btn">
+                <p>create</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="Object_transform">
+        <p>Shape</p>
+        <table>
+            <tr>
+                <td>Rotation_X</td>
+                <td id="Object_Rotation_X">00</td>
+            </tr>
+            <tr>
+                <td>Rotation_Y</td>
+                <td id="Object_Rotation_Y">00</td>
+            </tr>
+            <tr>
+                <td>Rotation_Z</td>
+                <td id="Object_Rotation_Z">00</td>
+            </tr>
+            <tr>
+                <td>Move_X</td>
+                <td id="Object_Move_X">00</td>
+            </tr>
+            <tr>
+                <td>Move_Y</td>
+                <td id="Object_Move_Y">00</td>
+            </tr>
+            <tr>
+                <td>Move_Z</td>
+                <td id="Object_Move_Z">00</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="Camera_transform">
+        <p>Camera</p>
+        <table>
+            <tr>
+                <td>Rotation_X</td>
+                <td id="Camera_Rotation_X">00</td>
+            </tr>
+            <tr>
+                <td>Rotation_Y</td>
+                <td id="Camera_Rotation_Y">00</td>
+            </tr>
+            <tr>
+                <td>Rotation_Z</td>
+                <td id="Camera_Rotation_Z">00</td>
+            </tr>
+            <tr>
+                <td>Move_X</td>
+                <td id="Camera_Move_X">00</td>
+            </tr>
+            <tr>
+                <td>Move_Y</td>
+                <td id="Camera_Move_Y">00</td>
+            </tr>
+            <tr>
+                <td>Move_Z</td>
+                <td id="Camera_Move_Z">00</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="command_list_btn">
+        <p>Command List</p>
+        <img src="Down.svg" alt="">
+    </div>
+
+    <div id="Command_list" class="unactive">
+        <div class="Command_list_2">
+            <div class="control_bar">
+                <div id="close"></div>
+                <div id="left"></div>
+                <div id="right"></div>
+            </div>
+            <div class="Content_box">
+                <p>Command List</p>
+                <table>
+                    <tr>
+                        <td>Command</td>
+                        <td>Task</td>
+                    </tr>
+                </table>
+                <table>
+    
+                    <!-- COMMNAD WITH KEYS ONLY -->
+    
+                    <tr>
+                        <td>Shift + Up_Arrow ↑</td>
+                        <td>To Move the Shape Up_ward</td>
+                    </tr>
+                    <tr>
+                        <td>Shift + Down_Arrow ↓</td>
+                        <td>To Move the Shape Down_ward</td>
+                    </tr>
+                    <tr>
+                        <td>Shift + Left_Arrow ←</td>
+                        <td>To Move the Shape to the Left</td>
+                    </tr>
+                    <tr>
+                        <td>Shift + Right_Arrow →</td>
+                        <td>To Move the Shape to the Right</td>
+                    </tr>
+                    <tr>
+                        <td>Up_Arrow ↑</td>
+                        <td>To Rotate the Shape Up_ward in the X_Axis</td>
+                    </tr>
+                    <tr>
+                        <td>Down_Arrow ↓</td>
+                        <td>To Rotate the Shape Down_ward in the X_Axis</td>
+                    </tr>
+                    <tr>
+                        <td>Left_Arrow ←</td>
+                        <td>To Rotate the Shape to the Left in the Y_Axis</td>
+                    </tr>
+                    <tr>
+                        <td>Right_Arrow →</td>
+                        <td>To Rotate the Shape to the Right in the Y_Axis</td>
+                    </tr>
+                    <tr>
+                        <td>Control + Up_Arrow ↑</td>
+                        <td>To Rotate the Shape to the Left in the Z_Axis</td>
+                    </tr>
+                    <tr>
+                        <td>Control + Down_Arrow ↓</td>
+                        <td>To Rotate the Shape to the Right in the Z_Axis</td>
+                    </tr>
+                    <tr>
+                        <td>L</td>
+                        <td>To Move the Camera to the Left</td>
+                    </tr>
+                    <tr>
+                        <td>R</td>
+                        <td>To Move the Camera to the Right</td>
+                    </tr>
+                    <tr>
+                        <td>U</td>
+                        <td>To Move the Camera to the Upward</td>
+                    </tr>
+                    <tr>
+                        <td>D</td>
+                        <td>To Move the Camera to the Downward</td>
+                    </tr>
+                    <tr>
+                        <td>F</td>
+                        <td>To Move the Camera to the Forward</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>To Move the Camera to the Backward</td>
+                    </tr>
+                </table>
+    
+                <!-- COMMNAD WITH KEYS AND MOUSE -->
+    
+                <table>
+                    <tr>
+                        <td>M + Left_click</td>
+                        <td>To Move the shape freely in Any Axis</td>
+                    </tr>
+                    <tr>
+                        <td>V + Left_click</td>
+                        <td>To Move the shape in Y_Axis Only</td>
+                    </tr>
+                    <tr>
+                        <td>H + Left_click</td>
+                        <td>To Move the shape in X_Axis Only</td>
+                    </tr>
+                    <tr>
+                        <td>Y + Left_click</td>
+                        <td>To Rotate the shape in Y_Axis Only <Span>( Move your Mouse Left and Right while using this
+                                command )</Span></td>
+                    </tr>
+                    <tr>
+                        <td>X + Left_click</td>
+                        <td>To Rotate the shape in X_Axis Only <Span>( Move your Mouse Up and Down while using this command
+                                )</Span></td>
+                    </tr>
+                    <tr>
+                        <td>Z + Left_click</td>
+                        <td>To Rotate the shape in Z_Axis Only <Span>( Move your Mouse Around the Shape while using this
+                                command )</Span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="left_bar"></div>
+    <div id="right_bar"></div>
+
+    <div id="error_box">
+        <p id="error_message">check</p>
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <!-- <script src="p5.js"></script> -->
+    <script src="Javascript/Support/Color.js"></script>
+    <script src="Javascript/Support/Shortcut.js"></script>
+    <script src="Javascript/Support/Geometry.js"></script>
+    <script src="Javascript/Support/particles.js"></script>
+    <!-- <script src="canvas.js"></script> -->
+    <script src="Javascript/Support/Utils.js"></script>
+    <script src="Javascript/Support/vector.js"></script>
+    <script src="Javascript/Main/matrix.js"></script>
+    <script src="Javascript/Main/model.js"></script>
+    <script src="Javascript/Main/create.js"></script>
+    <script src="Javascript/Main/main.js" type="text/javascript"></script>
+    <script src="Javascript/Main/Command_List.js"></script>
+
+</body>
+
+</html>
