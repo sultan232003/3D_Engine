@@ -61,11 +61,20 @@ body {
     }
 }
 
-#move_tool
-{
+
+
+#toolbar{
     position: absolute;
-    bottom: 5px;
     left: 5px;
+    bottom: 5px;
+    display: flex;
+    gap: 5px;
+    flex-direction: column-reverse;
+}
+
+#move_tool,
+#rotate_tool
+{
     background-color: var(--background_primary);
     padding: 8px;
     border: var(--border);
@@ -73,7 +82,8 @@ body {
     border-radius: 10px;
 }
 
-#move_tool.active{
+#move_tool.active,
+#rotate_tool.active{
     background-color: var(--green);
     color: var(--background_primary);
 }
