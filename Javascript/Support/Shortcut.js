@@ -180,3 +180,14 @@ const revolution = (fromX, fromY, toX, toY, want_degree) => {
         return utils.degreesToRads(revolution_degree);
     }
 }
+
+
+
+
+const findAngleBetween = (x1, y1, x2, y2) => {
+    let calc_angle = Math.atan2(y2 - y1, x2 - x1);
+    if (calc_angle < 0) {
+        calc_angle += Math.PI * 2;
+    }
+    return calc_angle * (180 / Math.PI);
+}
