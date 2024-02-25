@@ -79,6 +79,7 @@ const Border = document.getElementById("Border")
 const Fill = document.getElementById("Fill")
 Fill.checked = true
 const Create_btn = document.getElementById("create_btn")
+const Command_Key_List = ["c", "m", "s"]
 
 document.addEventListener('keypress', (e) => {
     let keypressed = e.key
@@ -129,18 +130,36 @@ Create_btn.addEventListener("click", () => {
         Create.classList.remove("active")
         sculpture.push(new create(mouseX - centerX, mouseY - centerY, 0, Number(Size.value), Number(Size.value), Number(Size.value), 0, 0, 0, eval(Shape.value), Border.checked, Fill.checked))
         // sculpture[sculpture.length - 1].drag()
-        // sculpture[sculpture.length - 1].move()
+        sculpture[sculpture.length - 1].move()
         sculpture[sculpture.length - 1].index = sculpture.length
         reset_clear()
     }
 })
 
 
-Move_tool.addEventListener("click", () => {
-    Move_tool.classList.toggle("active")
-})
+const Tool_control = (tool_element) => {
+    tool_element.addEventListener("click", () => {
+        Tool.forEach(tool => {
+            tool.classList.remove("active")
+        });
+        tool_element.classList.toggle("active")
+    })
+}
+
+Tool_control(Move_tool)
+Tool_control(Rotate_tool)
+
 document.addEventListener("keydown", () => {
-    if (keypressed == "m") {
-        Move_tool.classList.toggle("active")
+    if(Command_Key_List.includes(keypressed)){
+
+        Tool.forEach(tool => {
+            tool.classList.remove("active")
+        });
+        if (keypressed == "m") {
+            Move_tool.classList.toggle("active")
+        }
+        if (keypressed == "s") {
+            Rotate_tool.classList.toggle("active")
+        }
     }
 })
