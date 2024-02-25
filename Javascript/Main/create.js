@@ -1,4 +1,7 @@
+const Toolbar = document.getElementById("toolbar")
 const Move_tool = document.getElementById("move_tool")
+const Rotate_tool = document.getElementById("rotate_tool")
+const Tool = document.querySelectorAll(".tool")
 
 let camera = vector.create(0, 0, 1, 0)
 
@@ -124,8 +127,8 @@ class create {
         this.dist = 2
         this.l
         this.l2
-        this.sphere_vertex = []
-        this.sphere_edges = []
+        this.model_vertex = []
+        this.model_edges = []
         this.dotproduct
         this.offset = vector.create()
         this.stroke = stroke || false
@@ -134,6 +137,8 @@ class create {
         this.hover = false
         this.selected_drag = false
         this.selected_move = false
+        this.selected_rotate = false
+        this.selected_drag_rotate = false
         this.hover_distance
 
 
@@ -141,18 +146,18 @@ class create {
         this.model_mat = new Matrix(this.model.length / 4, 4, model)
         for (let i = 0; i < this.model_mat.matrix_val.length; i++) {
             if (this.model_mat.matrix_val[i][0] == "v") {
-                this.sphere_vertex.push(
+                this.model_vertex.push(
                     Matrix.vec_to_mat(vector.create(this.model_mat.matrix_val[i][1], this.model_mat.matrix_val[i][2], this.model_mat.matrix_val[i][3], 1)))
             }
         }
         for (let i = 0; i < this.model_mat.matrix_val.length; i++) {
             if (this.model_mat.matrix_val[i][0] == "f") {
-                this.sphere_edges.push([this.model_mat.matrix_val[i][1], this.model_mat.matrix_val[i][2], this.model_mat.matrix_val[i][3]]
+                this.model_edges.push([this.model_mat.matrix_val[i][1], this.model_mat.matrix_val[i][2], this.model_mat.matrix_val[i][3]]
                 )
             }
         }
         this.see = []
-        for (let i = 0; i < this.sphere_vertex.length; i++) {
+        for (let i = 0; i < this.model_vertex.length; i++) {
             this.see.push(new Matrix(4, 1))
 
         }
@@ -160,42 +165,49 @@ class create {
     }
     move() {
         document.addEventListener("keydown", (e) => {
-            switch (keypressed_code) {
-                case 38: // UP
-                    if (e.ctrlKey) {
-                        this.rotate_Z -= 0.005
-                    } else if (e.shiftKey) {
+            if (this.selected_move) {
+                switch (keypressed) {
+                    case "ArrowUp":
                         this.y -= 5
-                    }
-                    else {
-                        this.rotate_X -= 0.005
-                    }
-                    break;
-                case 40:  // DOWN
-                    if (e.ctrlKey) {
-                        this.rotate_Z += 0.005
-                    } else if (e.shiftKey) {
+                        break;
+                    case "ArrowDown":
                         this.y += 5
-                    } else {
-                        this.rotate_X += 0.005
-                    }
-                    break;
-                case 37: //LEFT
-                    if (e.shiftKey) {
+                        break;
+                    case "ArrowLeft":
                         this.x -= 5
-                    } else {
-                        this.rotate_Y += 0.005
-                    }
-                    break;
-                case 39: //RIGHT
-                    if (e.shiftKey) {
+                        break;
+                    case "ArrowRight":
                         this.x += 5
-                    } else {
-                        this.rotate_Y -= 0.00005
-                    }
-                    break;
+                        break;
+                }
+            }
+            if (this.selected_rotate) {
+                switch (keypressed) {
+                    case "ArrowUp":
+                        if (e.shiftKey) {
+                            this.rotate_Z -= 0.05
+                        }
+                        else {
+                            this.rotate_X -= 0.05
+                        }
+                        break;
+                    case "ArrowDown":
+                        if (e.shiftKey) {
+                            this.rotate_Z += 0.05
+                        } else {
+                            this.rotate_X += 0.05
+                        }
+                        break;
+                    case "ArrowLeft":
+                        this.rotate_Y += 0.05
+                        break;
+                    case "ArrowRight":
+                        this.rotate_Y -= 0.05
+                        break;
+                }
             }
         })
+        return
     }
 
     drag() {
@@ -205,15 +217,18 @@ class create {
                     this.y = mouseY - centerY
                 } else if (keypressed == "h") {
                     this.x = mouseX - centerX
-                } else if (keypressed == "y") {
-                    this.rotate_Y = (mouseX - centerX) / 10
-                } else if (keypressed == "x") {
-                    this.rotate_X = (mouseY - centerY) / 10
-                } else if (keypressed == "z") {
-                    this.rotate_Z = revolution(this.x, this.y, mouseX, mouseY, false)
                 } else {
                     this.x = (mouseX - centerX) - this.offset.x
                     this.y = (mouseY - centerY) - this.offset.y
+                }
+            }
+            if (this.selected_drag_rotate) {
+                if (keypressed == "y") {
+                    this.rotate_Y = (mouseX - centerX) / 57
+                } else if (keypressed == "x") {
+                    this.rotate_X = (mouseY - centerY) / 57
+                } else {
+                    this.rotate_Z = findAngleBetween(this.x, this.y, mouseX - centerX, mouseY - centerY) / 57
                 }
             }
         })
@@ -223,40 +238,40 @@ class create {
         mat_camera = point_at(camera, vTarget, up)
         mat_view = Matrix_QuickInverse(mat_camera)
 
-        for (let i = 0; i < this.sphere_edges.length; i++) {
-            if (i < this.sphere_vertex.length) {
-                this.sphere_vertex[i] = Matrix.rotate_X_Y_Z_T_S(this.sphere_vertex[i], this.rotate_X, this.rotate_Y, this.rotate_Z, this.x, this.y, this.z, this.scale_X, this.scale_y, this.scale_Z)
-                this.see[i].matrix_val[0][0] = this.sphere_vertex[i].x
-                this.see[i].matrix_val[1][0] = this.sphere_vertex[i].y
-                this.see[i].matrix_val[2][0] = this.sphere_vertex[i].z
-                this.see[i].matrix_val[3][0] = this.sphere_vertex[i].w
+        for (let i = 0; i < this.model_edges.length; i++) {
+            if (i < this.model_vertex.length) {
+                this.model_vertex[i] = Matrix.rotate_X_Y_Z_T_S(this.model_vertex[i], this.rotate_X, this.rotate_Y, this.rotate_Z, this.x, this.y, this.z, this.scale_X, this.scale_y, this.scale_Z)
+                this.see[i].matrix_val[0][0] = this.model_vertex[i].x
+                this.see[i].matrix_val[1][0] = this.model_vertex[i].y
+                this.see[i].matrix_val[2][0] = this.model_vertex[i].z
+                this.see[i].matrix_val[3][0] = this.model_vertex[i].w
                 this.check[i] = mat_view.mat_mul(this.see[i])
             }
         }
-        for (let i = 0; i < this.sphere_edges.length; i++) {
-            this.line1.x = this.check[this.sphere_edges[i][1]].matrix_val[0][0] - this.check[this.sphere_edges[i][0]].matrix_val[0][0]
-            this.line1.y = this.check[this.sphere_edges[i][1]].matrix_val[1][0] - this.check[this.sphere_edges[i][0]].matrix_val[1][0]
-            this.line1.z = this.check[this.sphere_edges[i][1]].matrix_val[2][0] - this.check[this.sphere_edges[i][0]].matrix_val[2][0]
-            this.line2.x = this.check[this.sphere_edges[i][2]].matrix_val[0][0] - this.check[this.sphere_edges[i][0]].matrix_val[0][0]
-            this.line2.y = this.check[this.sphere_edges[i][2]].matrix_val[1][0] - this.check[this.sphere_edges[i][0]].matrix_val[1][0]
-            this.line2.z = this.check[this.sphere_edges[i][2]].matrix_val[2][0] - this.check[this.sphere_edges[i][0]].matrix_val[2][0]
+        for (let i = 0; i < this.model_edges.length; i++) {
+            this.line1.x = this.check[this.model_edges[i][1]].matrix_val[0][0] - this.check[this.model_edges[i][0]].matrix_val[0][0]
+            this.line1.y = this.check[this.model_edges[i][1]].matrix_val[1][0] - this.check[this.model_edges[i][0]].matrix_val[1][0]
+            this.line1.z = this.check[this.model_edges[i][1]].matrix_val[2][0] - this.check[this.model_edges[i][0]].matrix_val[2][0]
+            this.line2.x = this.check[this.model_edges[i][2]].matrix_val[0][0] - this.check[this.model_edges[i][0]].matrix_val[0][0]
+            this.line2.y = this.check[this.model_edges[i][2]].matrix_val[1][0] - this.check[this.model_edges[i][0]].matrix_val[1][0]
+            this.line2.z = this.check[this.model_edges[i][2]].matrix_val[2][0] - this.check[this.model_edges[i][0]].matrix_val[2][0]
             this.normal.x = this.line1.y * this.line2.z - this.line1.z * this.line2.y;
             this.normal.y = this.line1.z * this.line2.x - this.line1.x * this.line2.z;
             this.normal.z = this.line1.x * this.line2.y - this.line1.y * this.line2.x;
             this.l = sqrt(this.normal.x * this.normal.x + this.normal.y * this.normal.y + this.normal.z * this.normal.z);
             this.normal.x /= this.l; this.normal.y /= this.l; this.normal.z /= this.l;
             if (this.normal.z > 0) {
-                // if (this.normal.x * this.sphere_vertex[0].x - camera.x +
-                //     this.normal.y * this.sphere_vertex[0].y - camera.y +
-                //     this.normal.z * this.sphere_vertex[0].z - camera.z < 0) {
+                // if (this.normal.x * this.model_vertex[0].x - camera.x +
+                //     this.normal.y * this.model_vertex[0].y - camera.y +
+                //     this.normal.z * this.model_vertex[0].z - camera.z < 0) {
                 this.l2 = sqrt(light.x * light.x + light.y * light.y + light.z * light.z);
                 light.x /= this.l2; light.y /= this.l2; light.z /= this.l2;
                 this.dotproduct = abs(this.normal.x * light.x + this.normal.y * light.y + this.normal.z * light.z) * 10
                 ctx.beginPath()
-                ctx.moveTo(this.check[this.sphere_edges[i][0]].matrix_val[0][0], this.check[this.sphere_edges[i][0]].matrix_val[1][0])
-                ctx.lineTo(this.check[this.sphere_edges[i][1]].matrix_val[0][0], this.check[this.sphere_edges[i][1]].matrix_val[1][0])
-                ctx.lineTo(this.check[this.sphere_edges[i][2]].matrix_val[0][0], this.check[this.sphere_edges[i][2]].matrix_val[1][0])
-                ctx.lineTo(this.check[this.sphere_edges[i][0]].matrix_val[0][0], this.check[this.sphere_edges[i][0]].matrix_val[1][0])
+                ctx.moveTo(this.check[this.model_edges[i][0]].matrix_val[0][0], this.check[this.model_edges[i][0]].matrix_val[1][0])
+                ctx.lineTo(this.check[this.model_edges[i][1]].matrix_val[0][0], this.check[this.model_edges[i][1]].matrix_val[1][0])
+                ctx.lineTo(this.check[this.model_edges[i][2]].matrix_val[0][0], this.check[this.model_edges[i][2]].matrix_val[1][0])
+                ctx.lineTo(this.check[this.model_edges[i][0]].matrix_val[0][0], this.check[this.model_edges[i][0]].matrix_val[1][0])
                 if (this.stroke == true) {
                     ctx.stroke()
                     ctx.strokeStyle = "white"
@@ -270,17 +285,25 @@ class create {
         }
         text(10, "#ffffff", "Selected_Drag : " + this.selected_drag, this.x + this.scale_X + 5, this.y + this.scale_y, 1)
         text(10, "#ffffff", "Selected_Move : " + this.selected_move, this.x + this.scale_X + 5, this.y + this.scale_y - 12, 1)
+        text(10, "#ffffff", "Selected_Rotate : " + this.selected_rotate, this.x + this.scale_X + 5, this.y + this.scale_y - 24, 1)
     }
 
     update() {
-        if (Move_tool.classList.contains("active")) {
+        const Find_Hover = () => {
             this.hover_distance = utils.distanceXY(mouseX - centerX, mouseY - centerY, this.x, this.y)
-            if (this.hover_distance < this.scale_X) {
+            return this.hover_distance
+        }
+
+        const Check_Hover = () => {
+            if (Find_Hover() < this.scale_X) {
                 this.hover = true
             } else {
                 this.hover = false
             }
+        }
 
+        if (Move_tool.classList.contains("active")) {
+            Check_Hover()
             document.addEventListener("mousedown", (e) => {
                 if (this.hover) {
                     this.selected_drag = true
@@ -291,12 +314,39 @@ class create {
             document.addEventListener("mouseup", (e) => {
                 this.selected_drag = false
             })
-
-            if (this.hover) {
-            }
+            document.addEventListener("click", (e) => {
+                if (this.hover) {
+                    this.selected_move = true
+                } else {
+                    this.selected_move = false
+                }
+            })
         } else {
             this.hover = false
             this.selected_drag = false
+            this.selected_move = false
+        }
+
+        if (Rotate_tool.classList.contains("active")) {
+            Check_Hover()
+            document.addEventListener("mousedown", () => {
+                if (this.hover) {
+                    this.selected_drag_rotate = true
+                }
+            })
+            document.addEventListener("mouseup", (e) => {
+                this.selected_drag_rotate = false
+            })
+            document.addEventListener("click", (e) => {
+                if (this.hover) {
+                    this.selected_rotate = true
+                } else {
+                    this.selected_rotate = false
+                }
+            })
+        } else {
+            this.selected_rotate = false
+            this.selected_drag_rotate = false
         }
     }
 
@@ -306,10 +356,6 @@ class create {
         }
         if (this.selected_drag) {
             this.drag()
-        }
-
-        if (this.selected_move) {
-            this.move()
         }
     }
 }
