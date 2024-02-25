@@ -17,20 +17,28 @@ canvas_translate(true)
 
 let sculpture = []
 sculpture.push(new create(0, 0, 0, 100, 100, 100, 0, 0, 0, cube, false, true))
-// for(let i = 0;i<sculpture.length;i++){
-//     sculpture[i].track()
-//     sculpture[i].move()
-// }
+for(let i = 0;i<sculpture.length;i++){
+    sculpture[i].drag()
+    sculpture[i].move()
+}
+
+let func = ()=>{
+    for(let i = 0;i<sculpture.length;i++){
+        sculpture[i].show()
+        sculpture[i].update()
+        sculpture[i].track()  
+    }
+}
 
 let light = vector.create(0, 0, 100, 0)
 
 function draw() {
-    const checknum = (sculpt)=>{
-        if(sculpt.selected_drag){
+    const checkindex = (sculpt)=>{
+        if(sculpt.selected_drag || sculpt.selected_move){
             return sculpt
         }
     }
-    let selected_index = sculpture.findIndex(checknum)
+    let selected_index = sculpture.findIndex(checkindex)
 
     ctx.rect(0 - centerX, 0 - centerY, canvas_width, canvas_height)
     ctx.fillStyle = "#05060F"
@@ -43,25 +51,38 @@ function draw() {
         Object_Move_X.innerHTML = sculpture[selected_index].x
         Object_Move_Y.innerHTML = sculpture[selected_index].y
         Object_Move_Z.innerHTML = sculpture[selected_index].z
-    }
-        Camera_Rotation_X.innerHTML = 0
-        Camera_Rotation_Y.innerHTML = 0
-        Camera_Rotation_Z.innerHTML = 0
-    Camera_Move_X.innerHTML = camera.x
-    Camera_Move_Y.innerHTML = camera.y
-    Camera_Move_Z.innerHTML = camera.z
+    };
+    Camera_Rotation_X.innerHTML = 0;
+    Camera_Rotation_Y.innerHTML = 0;
+    Camera_Rotation_Z.innerHTML = 0;
+    Camera_Move_X.innerHTML = camera.x;
+    Camera_Move_Y.innerHTML = camera.y;
+    Camera_Move_Z.innerHTML = camera.z;
     // Matrix.grid(10)
-    for(let i = 0;i<sculpture.length;i++){
-        sculpture[i].show()
-        sculpture[i].update()
-        sculpture[i].track()  
-    }
+    func()
     
     requestAnimationFrame(draw)
 }
 draw()
 
+// let i = 1
+// let pro = new Matrix(4,4,[1,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0])
+// let ver = new Matrix(4,1,[1,2,3,1])
+// do{
 
+//     // pro.print_mat()
+//     // console.tprole(pro)
+//     ver.print_mat()
+//     let tes = pro.mat_mul(ver)
+//     tes.print_mat()
+//     tes.mat_mul(1/tes.matrix_val[3][0])
+//     let de = tes
+//     de.print_mat()
+//     ver = de
+//     ver.matrix_val[2][0] = i
+//     print("------------------------------------------")
+//     i++
+// }while(i<10)
 
 
 // let pos = vector.create(1,1,1)
