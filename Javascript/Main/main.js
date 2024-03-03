@@ -18,14 +18,14 @@ canvas_translate(true)
 let sculpture = []
 sculpture.push(new create(0, 0, 0, 100, 100, 100, 0, 0, 0, cube, false, true))
 for(let i = 0;i<sculpture.length;i++){
-    sculpture[i].drag()
     sculpture[i].move()
 }
 
-let func = ()=>{
+let main = ()=>{
     for(let i = 0;i<sculpture.length;i++){
         sculpture[i].show()
-        sculpture[i].update()
+        sculpture[i].updateMove()
+        sculpture[i].updateRotate()
         sculpture[i].track()  
     }
 }
@@ -34,7 +34,7 @@ let light = vector.create(0, 0, 100, 0)
 
 function draw() {
     const checkindex = (sculpt)=>{
-        if(sculpt.selected_drag || sculpt.selected_move){
+        if(sculpt.selected_drag || sculpt.selected_move || sculpt.selected_rotate || sculpt.selected_drag_rotate){
             return sculpt
         }
     }
@@ -59,7 +59,7 @@ function draw() {
     Camera_Move_Y.innerHTML = camera.y;
     Camera_Move_Z.innerHTML = camera.z;
     // Matrix.grid(10)
-    func()
+    main()
     
     requestAnimationFrame(draw)
 }
