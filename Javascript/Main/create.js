@@ -163,76 +163,6 @@ class create {
         }
         this.check = []
     }
-    move() {
-        document.addEventListener("keydown", (e) => {
-            if (this.selected_move) {
-                switch (keypressed) {
-                    case "ArrowUp":
-                        this.y -= 5
-                        break;
-                    case "ArrowDown":
-                        this.y += 5
-                        break;
-                    case "ArrowLeft":
-                        this.x -= 5
-                        break;
-                    case "ArrowRight":
-                        this.x += 5
-                        break;
-                }
-            }
-            if (this.selected_rotate) {
-                switch (keypressed) {
-                    case "ArrowUp":
-                        if (e.shiftKey) {
-                            this.rotate_Z -= 0.05
-                        }
-                        else {
-                            this.rotate_X -= 0.05
-                        }
-                        break;
-                    case "ArrowDown":
-                        if (e.shiftKey) {
-                            this.rotate_Z += 0.05
-                        } else {
-                            this.rotate_X += 0.05
-                        }
-                        break;
-                    case "ArrowLeft":
-                        this.rotate_Y += 0.05
-                        break;
-                    case "ArrowRight":
-                        this.rotate_Y -= 0.05
-                        break;
-                }
-            }
-        })
-        return
-    }
-
-    drag() {
-        document.addEventListener("mousemove", () => {
-            if (this.selected_drag) {
-                if (keypressed == "v") {
-                    this.y = mouseY - centerY
-                } else if (keypressed == "h") {
-                    this.x = mouseX - centerX
-                } else {
-                    this.x = (mouseX - centerX) - this.offset.x
-                    this.y = (mouseY - centerY) - this.offset.y
-                }
-            }
-            if (this.selected_drag_rotate) {
-                if (keypressed == "y") {
-                    this.rotate_Y = (mouseX - centerX) / 57
-                } else if (keypressed == "x") {
-                    this.rotate_X = (mouseY - centerY) / 57
-                } else {
-                    this.rotate_Z = findAngleBetween(this.x, this.y, mouseX - centerX, mouseY - centerY) / 57
-                }
-            }
-        })
-    }
 
     show() {
         mat_camera = point_at(camera, vTarget, up)
@@ -283,27 +213,63 @@ class create {
                 }
             }
         }
-        text(10, "#ffffff", "Selected_Drag : " + this.selected_drag, this.x + this.scale_X + 5, this.y + this.scale_y, 1)
-        text(10, "#ffffff", "Selected_Move : " + this.selected_move, this.x + this.scale_X + 5, this.y + this.scale_y - 12, 1)
-        text(10, "#ffffff", "Selected_Rotate : " + this.selected_rotate, this.x + this.scale_X + 5, this.y + this.scale_y - 24, 1)
+        text(8, "#ffffff", "Selected_Drag : " + this.selected_drag, this.x + this.scale_X + 5, this.y + this.scale_y, 1)
+        text(8, "#ffffff", "Selected_Move : " + this.selected_move, this.x + this.scale_X + 5, this.y + this.scale_y - 12, 1)
+        text(8, "#ffffff", "Selected_Rotate : " + this.selected_rotate, this.x + this.scale_X + 5, this.y + this.scale_y - 24, 1)
+        text(8, "#ffffff", "Selected_drag_rotate : " + this.selected_drag_rotate, this.x + this.scale_X + 5, this.y + this.scale_y - 36, 1)
     }
 
-    update() {
-        const Find_Hover = () => {
-            this.hover_distance = utils.distanceXY(mouseX - centerX, mouseY - centerY, this.x, this.y)
-            return this.hover_distance
-        }
-
-        const Check_Hover = () => {
-            if (Find_Hover() < this.scale_X) {
-                this.hover = true
-            } else {
-                this.hover = false
+    move() {
+        document.addEventListener("keydown", (e) => {
+            if (this.selected_move) {
+                switch (keypressed) {
+                    case "ArrowUp":
+                        this.y -= 5
+                        break;
+                    case "ArrowDown":
+                        this.y += 5
+                        break;
+                    case "ArrowLeft":
+                        this.x -= 5
+                        break;
+                    case "ArrowRight":
+                        this.x += 5
+                        break;
+                }
             }
-        }
+            if (this.selected_rotate) {
+                switch (keypressed) {
+                    case "ArrowUp":
+                        if (e.shiftKey) {
+                            this.rotate_Z -= 0.05
+                        }
+                        else {
+                            this.rotate_X -= 0.05
+                        }
+                        break;
+                    case "ArrowDown":
+                        if (e.shiftKey) {
+                            this.rotate_Z += 0.05
+                        } else {
+                            this.rotate_X += 0.05
+                        }
+                        break;
+                    case "ArrowLeft":
+                        this.rotate_Y += 0.05
+                        break;
+                    case "ArrowRight":
+                        this.rotate_Y -= 0.05
+                        break;
+                }
+            }
+        })
+        return
+    }
 
+    updateMove() {
         if (Move_tool.classList.contains("active")) {
-            Check_Hover()
+            this.hover_distance = utils.findhover(mouseX - centerX, mouseY - centerY, this.x, this.y)
+            this.hover = utils.checkhover(this.hover_distance, this.scale_X)
             document.addEventListener("mousedown", (e) => {
                 if (this.hover) {
                     this.selected_drag = true
@@ -315,11 +281,7 @@ class create {
                 this.selected_drag = false
             })
             document.addEventListener("click", (e) => {
-                if (this.hover) {
-                    this.selected_move = true
-                } else {
-                    this.selected_move = false
-                }
+                this.selected_move = utils.checkclick(this.hover, this.selected_move)
             })
         } else {
             this.hover = false
@@ -327,8 +289,24 @@ class create {
             this.selected_move = false
         }
 
+        document.addEventListener("mousemove", () => {
+            if (this.selected_drag) {
+                if (keypressed == "y") {
+                    this.y = (mouseY - centerY) - this.offset.y
+                } else if (keypressed == "x") {
+                    this.x = (mouseX - centerX) - this.offset.x
+                } else {
+                    this.x = (mouseX - centerX) - this.offset.x
+                    this.y = (mouseY - centerY) - this.offset.y
+                }
+            }
+        })
+    }
+
+    updateRotate() {
         if (Rotate_tool.classList.contains("active")) {
-            Check_Hover()
+            this.hover_distance = utils.findhover(mouseX - centerX, mouseY - centerY, this.x, this.y)
+            this.hover = utils.checkhover(this.hover_distance, this.scale_X)
             document.addEventListener("mousedown", () => {
                 if (this.hover) {
                     this.selected_drag_rotate = true
@@ -338,24 +316,29 @@ class create {
                 this.selected_drag_rotate = false
             })
             document.addEventListener("click", (e) => {
-                if (this.hover) {
-                    this.selected_rotate = true
-                } else {
-                    this.selected_rotate = false
-                }
+                this.selected_rotate = utils.checkclick(this.hover, this.selected_rotate)
             })
         } else {
             this.selected_rotate = false
             this.selected_drag_rotate = false
         }
+
+        document.addEventListener("mousemove", () => {
+            if (this.selected_drag_rotate) {
+                if (keypressed == "y") {
+                    this.rotate_Y = (mouseX - centerX) / 57
+                } else if (keypressed == "x") {
+                    this.rotate_X = (mouseY - centerY) / 57
+                } else {
+                    this.rotate_Z = findAngleBetween(this.x, this.y, mouseX - centerX, mouseY - centerY) / 57
+                }
+            }
+        })
     }
 
     track() {
         if (this.hover) {
             drawCircle(this.x, this.y, this.scale_X, "#ffffff", 1, false)
-        }
-        if (this.selected_drag) {
-            this.drag()
         }
     }
 }
