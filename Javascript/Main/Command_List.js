@@ -135,31 +135,3 @@ Create_btn.addEventListener("click", () => {
         reset_clear()
     }
 })
-
-
-const Tool_control = (tool_element) => {
-    tool_element.addEventListener("click", () => {
-        Tool.forEach(tool => {
-            tool.classList.remove("active")
-        });
-        tool_element.classList.toggle("active")
-    })
-}
-
-Tool_control(Move_tool)
-Tool_control(Rotate_tool)
-
-document.addEventListener("keydown", () => {
-    if(Command_Key_List.includes(keypressed)){
-
-        Tool.forEach(tool => {
-            tool.classList.remove("active")
-        });
-        if (keypressed == "m") {
-            Move_tool.classList.toggle("active")
-        }
-        if (keypressed == "s") {
-            Rotate_tool.classList.toggle("active")
-        }
-    }
-})
