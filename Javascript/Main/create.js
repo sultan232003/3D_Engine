@@ -1,6 +1,7 @@
 const Toolbar = document.getElementById("toolbar")
 const Move_tool = document.getElementById("move_tool")
 const Rotate_tool = document.getElementById("rotate_tool")
+const Origin_tool = document.getElementById("origin_tool")
 const Tool = document.querySelectorAll(".tool")
 
 let camera = vector.create(0, 0, 1, 0)
@@ -111,9 +112,12 @@ const Matrix_QuickInverse = (val) => {
 
 class create {
     constructor(x, y, z, scale_X, scale_Y, scale_Z, rotate_X, rotate_Y, rotate_Z, model, stroke, filled) {
-        this.x = x
-        this.y = y
-        this.z = z
+        this.origin_x = x
+        this.origin_y = y
+        this.origin_z = z
+        this.x = this.origin_x
+        this.y = this.origin_y
+        this.z = this.origin_z
         this.scale_X = scale_X
         this.scale_y = scale_Y
         this.scale_Z = scale_Z
@@ -139,6 +143,8 @@ class create {
         this.selected_move = false
         this.selected_rotate = false
         this.selected_drag_rotate = false
+        this.selected_origin = false
+        this.selected_drag_origin = false
         this.hover_distance
 
 
@@ -216,7 +222,9 @@ class create {
         text(8, "#ffffff", "Selected_Drag : " + this.selected_drag, this.x + this.scale_X + 5, this.y + this.scale_y, 1)
         text(8, "#ffffff", "Selected_Move : " + this.selected_move, this.x + this.scale_X + 5, this.y + this.scale_y - 12, 1)
         text(8, "#ffffff", "Selected_Rotate : " + this.selected_rotate, this.x + this.scale_X + 5, this.y + this.scale_y - 24, 1)
-        text(8, "#ffffff", "Selected_drag_rotate : " + this.selected_drag_rotate, this.x + this.scale_X + 5, this.y + this.scale_y - 36, 1)
+        text(8, "#ffffff", "Selected_Drag_Rotate : " + this.selected_drag_rotate, this.x + this.scale_X + 5, this.y + this.scale_y - 36, 1)
+        text(8, "#ffffff", "Selected_Origin : " + this.selected_origin, this.x + this.scale_X + 5, this.y + this.scale_y - 48, 1)
+        text(8, "#ffffff", "Selected_Drag_Origin : " + this.selected_drag_origin, this.x + this.scale_X + 5, this.y + this.scale_y - 60, 1)
     }
 
     move() {
@@ -326,14 +334,35 @@ class create {
         document.addEventListener("mousemove", () => {
             if (this.selected_drag_rotate) {
                 if (keypressed == "y") {
-                    this.rotate_Y = (mouseX - centerX) / 57
+                    this.rotate_Y = (mouseX - centerX) / 57.5
                 } else if (keypressed == "x") {
-                    this.rotate_X = (mouseY - centerY) / 57
+                    this.rotate_X = (mouseY - centerY) / 57.5
                 } else {
-                    this.rotate_Z = findAngleBetween(this.x, this.y, mouseX - centerX, mouseY - centerY) / 57
+                    this.rotate_Z = findAngleBetween(this.x, this.y, mouseX - centerX, mouseY - centerY) / 57.5
                 }
             }
         })
+    }
+
+    updateOrigin(){
+        if (Origin_tool.classList.contains("active")){
+            this.hover_distance = utils.findhover(mouseX - centerX, mouseY - centerY, this.x, this.y)
+            this.hover = utils.checkhover(this.hover_distance, this.scale_X)
+            document.addEventListener("mousedown", () => {
+                if (this.hover) {
+                    this.selected_drag_origin = true
+                }
+            })
+            document.addEventListener("mouseup", (e) => {
+                this.selected_drag_origin = false
+            })
+            document.addEventListener("click", (e) => {
+                this.selected_origin = utils.checkclick(this.hover, this.selected_origin)
+            })
+        } else {
+            this.selected_origin = false
+            this.selected_drag_origin = false
+        }
     }
 
     track() {
