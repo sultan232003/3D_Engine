@@ -79,7 +79,7 @@ const Border = document.getElementById("Border")
 const Fill = document.getElementById("Fill")
 Fill.checked = true
 const Create_btn = document.getElementById("create_btn")
-const Command_Key_List = ["c", "m", "s"]
+const Command_Key_List = ["c", "m", "s", "o"]
 
 document.addEventListener('keypress', (e) => {
     let keypressed = e.key
@@ -133,5 +133,44 @@ Create_btn.addEventListener("click", () => {
         sculpture[sculpture.length - 1].move()
         sculpture[sculpture.length - 1].index = sculpture.length
         reset_clear()
+    }
+})
+
+
+
+////////////////////////////// CODE FOR OPTIONS MENU POPUP BOX //////////////////////////////
+
+
+
+const Option_box = document.getElementById("optionbox")
+const Reset_button = document.getElementById("reset")
+let option_index
+
+document.addEventListener("mousedown", (e) => {
+    let x = e.clientX - centerX
+    let y = e.clientY - centerY
+    if (e.button == 2) {
+        Option_box.style.cssText = `transform: translate(${e.clientX}px, ${e.clientY}px);`
+        Option_box.classList.add("active")
+        const check_option_index = (sculpt) => {
+            if (x >= (sculpt.x - sculpt.scale_X) && x <= (sculpt.x + sculpt.scale_X) && y >= (sculpt.y - sculpt.scale_y) && y <= (sculpt.y + sculpt.scale_y)) {
+                return sculpt
+            }
+        }
+        option_index = sculpture.findIndex(check_option_index)
+    }
+    if (Option_box.classList.contains("active") && e.button == 0) {
+        Option_box.classList.remove("active")
+    }
+})
+
+Reset_button.addEventListener("mousedown", () => {
+    if(option_index >= 0){
+        sculpture[option_index].x = sculpture[option_index].origin_x
+        sculpture[option_index].y = sculpture[option_index].origin_y
+        sculpture[option_index].z = sculpture[option_index].origin_z
+        sculpture[option_index].rotate_X = 0
+        sculpture[option_index].rotate_Y = 0
+        sculpture[option_index].rotate_Z = 0
     }
 })
