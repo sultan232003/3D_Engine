@@ -119,3 +119,55 @@ var vector = {
 		return val.x / l, val.y / l, val.x / l
 	}
 };
+
+
+// class Vector {
+// 	constructor(x, y, z, w) {
+// 		this.x = x
+// 		this.y = y
+// 		this.z = z
+// 		this.w = w
+// 		this.length = 0
+// 	}
+
+// 	setX(value) {
+// 		this.x = value
+// 	}
+
+// 	setY(value) {
+// 		this.y = value
+// 	}
+
+// 	setZ(value) {
+// 		this.z = value
+// 	}
+
+// 	setW(value) {
+// 		this.w = value
+// 	}
+
+// 	getX() {
+// 		return this.x
+// 	}
+
+// 	getY() {
+// 		return this.y
+// 	}
+
+// 	getZ() {
+// 		return this.z
+// 	}
+
+// 	getW() {
+// 		return this.w
+// 	}
+
+// 	setLength(point)
+// 	{
+// 		this.length = sqrt((this.x * point.x) + (this.y * point.y))
+// 	}
+
+// 	getlength(){
+// 		return this.length
+// 	}
+// }
