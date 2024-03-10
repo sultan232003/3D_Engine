@@ -1,22 +1,33 @@
+let clicked_index
+Tool.forEach(tool => {
+    tool.addEventListener("click", function () {
+        clicked_index = [...this.parentElement.children].indexOf(this)
+    })
+});
+
 class KeyTool {
     constructor(tool_name, control_key) {
         this.tool_name = tool_name
         this.control_key = control_key
         this.key_count = 0
-        this.click = false
     }
+
     update() {
+        this.index_val = Array.from(Tool).indexOf(this.tool_name)
         this.tool_name.addEventListener("click", () => {
-            this.index_val = Array.prototype.indexOf.call(Toolbar.children, this.tool_name)
             Tool.forEach(tool => {
                 tool.classList.remove("active")
             });
         })
 
+        Toolbar.addEventListener("click", () => {
+            if (!this.index_val == clicked_index) {
+                this.key_count = 0
+            }
+        })
+
         this.tool_name.addEventListener("click", (e) => {
-            this.click = true
             this.key_count++
-            print(this.key_count)
             if (this.key_count == 1) {
                 this.tool_name.classList.add("active")
             } else if (this.key_count == 2) {
@@ -34,7 +45,6 @@ class KeyTool {
         })
 
         document.addEventListener("keyup", (e) => {
-            // print(e.key)
             if (e.key == this.control_key) {
                 this.key_count++
             } else { this.key_count = 0 }
@@ -48,10 +58,9 @@ class KeyTool {
     }
 }
 
-//  MAKE IT SO THAT YOU DONT HAVE TO DOUBLE CLICK A TOOL TO ACTIVATE IT //
-
-
 const move = new KeyTool(Move_tool, "m")
 const rotate = new KeyTool(Rotate_tool, "s")
+const origin = new KeyTool(Origin_tool, "o")
 move.update()
 rotate.update()
+origin.update()
