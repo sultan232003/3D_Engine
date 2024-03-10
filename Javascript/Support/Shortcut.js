@@ -84,6 +84,8 @@ document.addEventListener("mousemove", (e) => {
     mouseX = e.clientX
     mouseY = e.clientY
 })
+let half_mouseX = mouseX - window.innerWidth / 2
+let half_mouseY = mouseY - window.innerHeight / 2
 
 document.addEventListener("mousedown", (e) => {
     mouse_down = true
